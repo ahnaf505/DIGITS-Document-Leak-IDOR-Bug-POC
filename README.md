@@ -101,29 +101,40 @@ For security triagers and analysts testing via web proxy:
 
 #### Steps to Reproduce (Method 2)
 
-1. **Configure Proxy & Scope**
+1. **Configure Proxy & Open Burp's Browser**
    - Open Burp Suite and verify the Proxy Listener is running on `127.0.0.1:8080`.
-   - Use Burp's built-in Chromium browser (or route your browser traffic through Burp with the Burp CA certificate installed).
+   - Click **Open browser** in **Proxy > Intercept** to launch Burp's built-in Chromium browser (pre-configured to route through the proxy).
+
+   ![Burp Suite Proxy with Open Browser](./images/burp-initial-open-browser.png)
 
 2. **Authenticate & Navigate to DIGITS**
-   - Log in to `https://digits.telkomschools.sch.id` as a registered applicant.
-   - Navigate to the **Registrasi Ulang / Unggah Dokumen** section where personal files are displayed.
+   - In the Burp browser, navigate to `https://digits.telkomschools.sch.id` and log in as a registered applicant.
+   - Navigate to the **Unggah Dokumen** section where personal files are displayed.
+
+   ![Logging in via Burp Browser](./images/burp-browser-login.png)
 
 3. **Locate or Intercept the Document Request**
-   - In Burp, navigate to **Proxy > HTTP history** (or turn **Intercept ON** in **Proxy > Intercept**).
+   - In Burp, turn **Intercept ON** in **Proxy > Intercept**.
    - Click **"Lihat"** on any of your own uploaded documents.
-   - Locate the HTTP request directed to:
+   - The browser will first send a CORS **`OPTIONS`** preflight request — click **Forward** to let it through.
+
+   ![OPTIONS Preflight Request — Forward This](./images/burp-allow-CORS-to-forward.png)
+
+   - The next intercepted request will be the actual **`GET`** request to:
      ```http
      GET /api/pendaftar/doc-file/<OWN_DOCUMENT_ID> HTTP/1.1
      Host: gw-ppdb.telkomschools.sch.id
      ```
 
 4. **Send to Repeater & Manipulate the ID**
-   - Right-click the captured request and select **Send to Repeater** (`Ctrl+R` / `Cmd+R`).
+   - Right-click the captured `GET` request and select **Send to Repeater** (`Ctrl+R`).
+
+   ![Send to Repeater](./images/burp-send-repeater-document.png)
+
    - In the **Repeater** tab, replace your document ID in the URL path with any target ID between **200 and 20000** (e.g., change `/api/pendaftar/doc-file/19642` to `/api/pendaftar/doc-file/19623`).
    - Keep your original `Authorization: Bearer <TOKEN>` header intact.
 
-   ![Burp Suite Request Setup](./images/burp-suite-requent-notsent-yet.png)
+   ![Burp Suite Repeater — Modified Request](./images/burp-suite-requent-notsent-yet.png)
 
 5. **Send and Inspect the Unauthorized Document**
    - Click **Send**.
