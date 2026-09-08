@@ -29,7 +29,7 @@ Origin: https://digits.telkomschools.sch.id
 
 While the endpoint verifies that the user is authenticated via a Bearer token, it fails to perform an authorization check to verify whether the requested `document_id` belongs to the authenticated user. 
 
-Because the IDs are predictable incremental integers and **most numbers between 200 and 20,000+** map to active student documents, an attacker can iterate through this range to scrape tens of thousands of sensitive personal records belonging to applicants across institutions (e.g., SMK Telkom Malang and other Telkom Schools branches).
+Because the IDs are predictable incremental integers and **most numbers between 200 and 20,000+** map to active student documents, an attacker can iterate through this range to scrape tens of thousands of sensitive personal records belonging to applicants across institutions (e.g., SMK Telkom Malang and possible other Telkom Schools branches).
 
 ---
 
@@ -134,7 +134,7 @@ For security triagers and analysts testing via web proxy:
    - In the **Repeater** tab, replace your document ID in the URL path with any target ID between **200 and 20000** (e.g., change `/api/pendaftar/doc-file/19642` to `/api/pendaftar/doc-file/19623`).
    - Keep your original `Authorization: Bearer <TOKEN>` header intact.
 
-   ![Burp Suite Repeater — Modified Request](./images/burp-suite-requent-notsent-yet.png)
+   ![Burp Suite Repeater — Modified Request](./images/burp-request-not-sent-yet.png)
 
 5. **Send and Inspect the Unauthorized Document**
    - Click **Send**.
