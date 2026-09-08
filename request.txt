@@ -1,14 +1,16 @@
-GET /api/pendaftar/doc-file/{TARGET ID GOES HERE} HTTP/1.1
+GET /api/pendaftar/doc-file/{DOCUMENT ID GOES HERE} HTTP/2
 Host: gw-ppdb.telkomschools.sch.id
-Authorization: {BEARER TOKEN GOES HERE}
-Origin: https://digits.telkomschools.sch.id
-Priority: u=1, i
-Sec-Ch-Ua: "Not=A?Brand";v="99", "Google Chrome";v="151", "Chromium";v="151"
-Sec-Ch-Ua-Mobile: ?0
 Sec-Ch-Ua-Platform: "Linux"
-Sec-Fetch-Dest: empty
-Sec-Fetch-Mode: cors
-Sec-Fetch-Site: same-site
-User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36
-Accept: application/json, text/plain, */*
+Authorization: {BEARER TOKEN GOES HERE}
 Accept-Language: en-US,en;q=0.9
+Accept: application/json, text/plain, */*
+Sec-Ch-Ua: "Chromium";v="151", "Not=A?Brand";v="99"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36
+Sec-Ch-Ua-Mobile: ?0
+Origin: https://digits.telkomschools.sch.id
+Sec-Fetch-Site: same-site
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Accept-Encoding: gzip, deflate, br
+Priority: u=1, i
+

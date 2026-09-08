@@ -41,9 +41,10 @@ Because the IDs are predictable incremental integers and **most numbers between 
 
 ## Proof of Concept (PoC)
 
-A reproduction script [`request.sh`](./request.sh) is included in this repository to demonstrate the issue.
+### Method 1: Using `request.sh` (cURL / CLI)
 
-### PoC Script: `request.sh`
+A standalone reproduction script [`request.sh`](./request.sh) is provided to quickly reproduce the vulnerability from the command line.
+
 ```bash
 #!/bin/bash
 
@@ -63,9 +64,7 @@ curl --url 'https://gw-ppdb.telkomschools.sch.id/api/pendaftar/doc-file/{TARGET 
   --output out.png
 ```
 
----
-
-### Steps to Reproduce
+#### Steps to Reproduce (Method 1)
 
 1. **Log in to the Application**  
    Log in to the re-registration / PPDB portal at `https://digits.telkomschools.sch.id`.
@@ -79,7 +78,7 @@ curl --url 'https://gw-ppdb.telkomschools.sch.id/api/pendaftar/doc-file/{TARGET 
 
 3. **Configure the PoC Script (`request.sh`)**  
    Open [`request.sh`](./request.sh) and change the following:
-   - `{BEARER TOKEN GOES HERE}` with your extracted JWT Bearer token(make sure to include the "Bearer ").
+   - `{BEARER TOKEN GOES HERE}` with your extracted JWT Bearer token (make sure to include the "Bearer ").
    - `{TARGET ID GOES HERE}` with any target document ID (most integer values between **200 and 20000** work and points to a valid document).
    
    ![Configuring request.sh](./images/requestsh-change-params.png)
@@ -93,6 +92,48 @@ curl --url 'https://gw-ppdb.telkomschools.sch.id/api/pendaftar/doc-file/{TARGET 
 
 5. **Verify Downloaded Document**  
    Check the downloaded `out.png` (or corresponding document file), keep in mind the .png was just for testing, the actual file types and extension may be different. It contains the personal document belonging to another user, confirming the authorization bypass.
+
+---
+
+### Method 2: Intercepting and Reproducing with Burp Suite
+
+For security triagers and analysts testing via web proxy:
+
+#### Steps to Reproduce (Method 2)
+
+1. **Configure Proxy & Scope**
+   - Open Burp Suite and verify the Proxy Listener is running on `127.0.0.1:8080`.
+   - Use Burp's built-in Chromium browser (or route your browser traffic through Burp with the Burp CA certificate installed).
+
+2. **Authenticate & Navigate to DIGITS**
+   - Log in to `https://digits.telkomschools.sch.id` as a registered applicant.
+   - Navigate to the **Registrasi Ulang / Unggah Dokumen** section where personal files are displayed.
+
+3. **Locate or Intercept the Document Request**
+   - In Burp, navigate to **Proxy > HTTP history** (or turn **Intercept ON** in **Proxy > Intercept**).
+   - Click **"Lihat"** on any of your own uploaded documents.
+   - Locate the HTTP request directed to:
+     ```http
+     GET /api/pendaftar/doc-file/<OWN_DOCUMENT_ID> HTTP/1.1
+     Host: gw-ppdb.telkomschools.sch.id
+     ```
+
+4. **Send to Repeater & Manipulate the ID**
+   - Right-click the captured request and select **Send to Repeater** (`Ctrl+R` / `Cmd+R`).
+   - In the **Repeater** tab, replace your document ID in the URL path with any target ID between **200 and 20000** (e.g., change `/api/pendaftar/doc-file/19642` to `/api/pendaftar/doc-file/19623`).
+   - Keep your original `Authorization: Bearer <TOKEN>` header intact.
+
+   ![Burp Suite Request Setup](./images/burp-suite-requent-notsent-yet.png)
+
+5. **Send and Inspect the Unauthorized Document**
+   - Click **Send**.
+   - Observe the response:
+     - **Status:** `HTTP/1.1 200 OK`
+     - **Headers:** `Content-Type: image/png` (or `image/jpeg`, `application/pdf`)
+     - **Body:** Binary payload containing the document uploaded by the victim applicant.
+   - Switch to the **Render** tab to view the leaked document directly inside Burp Suite:
+
+   ![Leaked Document Rendered in Burp Repeater](./images/burp-suite-intruder-people-document.png)
 
 ---
 
