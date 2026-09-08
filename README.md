@@ -17,9 +17,9 @@ A report on an Insecure Direct Object Reference (IDOR) vulnerability in **DIGITS
 ---
 
 ## Description
-When a user uploads personal documents (such as birth certificates / Akta Kelahiran, family registration cards / Kartu Keluarga, diplomas / Ijazah, photos, or identity cards) during the school registration process, the server assigns a sequential numeric identifier (`document_id`) to each uploaded file.
+When a user uploads personal documents (such as birth certificates, family registration cards, diplomas, photos, or identity cards) during the school registration process, the server assigns a sequential numeric identifier (`document_id`) to each uploaded file.
 
-When retrieving or viewing a document, the application calls:
+When retrieving or viewing a document, the frontend calls:
 ```http
 GET /api/pendaftar/doc-file/{document_id} HTTP/1.1
 Host: gw-ppdb.telkomschools.sch.id
@@ -27,15 +27,14 @@ Authorization: Bearer <AUTH_TOKEN>
 Origin: https://digits.telkomschools.sch.id
 ```
 
-While the endpoint verifies that the user is authenticated via a Bearer token, it fails to perform an authorization check to verify whether the requested `document_id` belongs to the authenticated applicant. 
+While the endpoint verifies that the user is authenticated via a Bearer token, it fails to perform an authorization check to verify whether the requested `document_id` belongs to the authenticated user. 
 
-Because the IDs are predictable incremental integers—and **most numbers between 200 and 20,000+** map to active student documents—an attacker can iterate through this range to scrape tens of thousands of sensitive personal records belonging to applicants across institutions (e.g., SMK Telkom Malang and other Telkom Schools branches).
+Because the IDs are predictable incremental integers and **most numbers between 200 and 20,000+** map to active student documents, an attacker can iterate through this range to scrape tens of thousands of sensitive personal records belonging to applicants across institutions (e.g., SMK Telkom Malang and other Telkom Schools branches).
 
 ---
 
 ## Impact
-- **Mass Confidential Data Scraping:** Tens of thousands of documents spanning IDs ~200 to 20,000+ are publicly accessible to any authenticated account.
-- **Exposure of Sensitive PII:** Files include birth certificates, family registration cards (Kartu Keluarga) containing parent names and NIK, diplomas/transcripts, integrity pacts, and photos.
+- **Mass Confidential Data Scraping:** Tens of thousands of documents spanning IDs  to 20,000+ are publicly accessible to any authenticated account.
 - **Privacy & Regulatory Violations:** Severe breach of student data privacy protection.
 
 ---
@@ -79,8 +78,8 @@ curl --url 'https://gw-ppdb.telkomschools.sch.id/api/pendaftar/doc-file/{TARGET 
    ![Extracting Bearer Token in DevTools](./images/bearer-devtools.png)
 
 3. **Configure the PoC Script (`request.sh`)**  
-   Open [`request.sh`](./request.sh) and populate:
-   - `{BEARER TOKEN GOES HERE}` with your extracted JWT Bearer token.
+   Open [`request.sh`](./request.sh) and change the following:
+   - `{BEARER TOKEN GOES HERE}` with your extracted JWT Bearer token(make sure to include the "Bearer ").
    - `{TARGET ID GOES HERE}` with any target document ID (most integer values between **200 and 20000** work and points to a valid document).
    
    ![Configuring request.sh](./images/requestsh-change-params.png)
@@ -93,7 +92,7 @@ curl --url 'https://gw-ppdb.telkomschools.sch.id/api/pendaftar/doc-file/{TARGET 
    ```
 
 5. **Verify Downloaded Document**  
-   Check the downloaded `out.png` (or corresponding document file). It contains the personal document belonging to another user, confirming the authorization bypass.
+   Check the downloaded `out.png` (or corresponding document file), keep in mind the .png was just for testing, the actual file types and extension may be different. It contains the personal document belonging to another user, confirming the authorization bypass.
 
 ---
 
