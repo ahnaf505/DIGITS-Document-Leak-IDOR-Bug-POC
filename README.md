@@ -1,4 +1,4 @@
-# IDOR Vulnerability in DIGITS Application
+# IDOR Vulnerability in the DIGITS Application
 
 ## Overview
 A report on an Insecure Direct Object Reference (IDOR) vulnerability in **DIGITS** (Telkom Schools School Registration / PPDB platform at `digits.telkomschools.sch.id` & `gw-ppdb.telkomschools.sch.id`). This vulnerability allows any authenticated applicant/student to view and download confidential registration documents uploaded by other users simply by manipulating the document ID parameter.
