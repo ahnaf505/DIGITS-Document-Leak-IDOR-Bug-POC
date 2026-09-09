@@ -34,8 +34,15 @@ Because the IDs are predictable incremental integers and **most numbers between 
 ---
 
 ## Impact
-- **Data Exfiltrated:** A total of **5,569 files** (~3.3 GB) were successfully exfiltrated (cataloged in [`downloaded.txt`](./downloaded.txt)). Additionally, a few thousand IDs were requested but not downloaded successfully (resulting in errors or empty responses).
+- **Mass Document Leakage:** Any authenticated applicant can enumerate and download confidential registration files belonging to other students.
 - **Privacy & Regulatory Violations:** Severe breach of student data privacy protection.
+
+---
+
+## Exfiltrated Data & ID Range
+During vulnerability verification, document IDs across a rough range of **~250 to ~27,000** (specifically IDs `258` through `26831`) were tested:
+- **Successfully Exfiltrated:** A total of **5,569 files** (~3.3 GB of `.png`, `.jpg`, and `.pdf` files) were successfully downloaded without authorization, as documented in [`downloaded.txt`](./downloaded.txt).
+- **Unsuccessful Requests:** A few thousand IDs within this range were requested but did not download successfully (returning errors or empty responses), indicating non-contiguous ID allocation, deleted uploads, or skipped registration sequence numbers.
 
 ---
 
