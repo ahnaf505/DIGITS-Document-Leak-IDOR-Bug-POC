@@ -34,7 +34,7 @@ Because the IDs are predictable incremental integers and **most numbers between 
 ---
 
 ## Impact
-- **Mass Confidential Data Scraping:** Tens of thousands of documents spanning IDs  to 20,000+ are publicly accessible to any authenticated account.
+- **Data Exfiltrated:** A total of **5,569 files** (~3.3 GB) were successfully exfiltrated (cataloged in [`downloaded.txt`](./downloaded.txt)). Additionally, a few thousand IDs were requested but not downloaded successfully (resulting in errors or empty responses).
 - **Privacy & Regulatory Violations:** Severe breach of student data privacy protection.
 
 ---
